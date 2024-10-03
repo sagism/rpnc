@@ -84,7 +84,7 @@ class RPNCalculator:
         panel = Panel(
             Text(stack_display, style="bold green"),
             title="RPN Calculator",
-            expand=False,
+            expand=True,
             border_style="blue",
         )
         self.console.print(panel)

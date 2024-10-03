@@ -3,6 +3,10 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
 
+ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
+UNARY_OPERATORS = {'r'}
+ALL_OPERATORS = ARITHMETIC_OPERATORS | UNARY_OPERATORS
+
 # Cross-platform getch implementation
 try:
     # Windows
@@ -58,7 +62,7 @@ class RPNCalculator:
             self.push(self.current_input)
             self.current_input = ""
 
-        if op in {'+', '-', '*', '/', '^', '%'}:
+        if op in ARITHMETIC_OPERATORS:
             if len(self.stack) < 2:
                 return
             b, a = self.pop(), self.pop()
@@ -75,7 +79,6 @@ class RPNCalculator:
             elif op == '%':
                 self.push(a % b)
         
-
 
             
     def display(self):
@@ -95,7 +98,7 @@ class RPNCalculator:
             self.display()
             char = getch()
 
-            if char in {'+', '-', '*', '/', 'r', '^', '%'}:
+            if char in ALL_OPERATORS:
                 self.perform_operation(char)
                 self.current_input = ""
             elif char.isdigit() or char == '.':

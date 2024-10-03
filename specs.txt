@@ -1,0 +1,34 @@
+
+Given I start the calculator
+Then I get a prompt
+And the display shows:
+   % rpn
+   > _
+
+
+Given I start the calculator
+When I press "3<enter>"
+Then I see:
+   % rpn
+   1: 3
+   > _
+
+
+Given I have the value 34 on the first stack line
+When I enter "45.2<enter>"
+Then I see:
+   % rpn
+   2: 34
+   1: 45.2
+   > _
+
+Given I have the values 34 and 45.2 on the second and first line respectively
+When I press "+"
+Then it adds the two lines and I see:
+   % rpn
+   1: 79.2
+   > _
+
+
+
+

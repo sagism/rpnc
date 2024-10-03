@@ -1,7 +1,4 @@
 import sys
-from rich.console import Console
-from rich.panel import Panel
-from rich.text import Text
 
 ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
 UNARY_OPERATORS = {'r'}
@@ -31,7 +28,39 @@ class RPNCalculator:
     def __init__(self):
         self.stack = []
         self.current_input = ""
-        self.console = Console()
+
+    def clear_screen(self):
+        sys.stdout.write("\033[2J\033[H")
+        sys.stdout.flush()
+
+    def move_cursor(self, x, y):
+        sys.stdout.write(f"\033[{y};{x}H")
+        sys.stdout.flush()
+
+    def clear_line(self):
+        sys.stdout.write("\033[K")
+        sys.stdout.flush()
+
+    def display(self):
+        self.move_cursor(1, 1)
+        # print("RPN Calculator")
+        # print("==============")
+        lines_printed = 0
+
+        for i, value in enumerate(self.stack, 1):
+            print(f"{len(self.stack) - i + 1}: {value}                    ")
+            lines_printed += 1
+
+        # Clear any remaining lines from previous displays
+        for _ in range(lines_printed, 20):  # Assume max 20 lines for safety
+            self.clear_line()
+            self.move_cursor(1, _ + 1)
+
+        # Move cursor to the input line
+        self.move_cursor(1, lines_printed + 1)
+        self.clear_line()
+        sys.stdout.write(f"> {self.current_input}")
+        sys.stdout.flush()
 
     def push(self, value):
         self.stack.append(float(value))
@@ -41,16 +70,12 @@ class RPNCalculator:
 
     def perform_operation(self, op):
         if op == 'r':
-            # round the top value on the stack
             if len(self.stack) < 1:
                 return
             a = self.pop()
-            self.console.print(f"Rounding {a} to {self.current_input} decimal places")
             if self.current_input:
-                
                 try:
                     precision = int(self.current_input)
-                    self.console.print(f"Rounding {a} to {precision} decimal places")
                     self.push(round(a, precision))
                     self.current_input = ""
                 except ValueError:
@@ -79,21 +104,10 @@ class RPNCalculator:
             elif op == '%':
                 self.push(a % b)
         
-
-            
-    def display(self):
-        self.console.clear()
-        stack_display = "\n".join(f"{len(self.stack) - i}: {value}" for i, value in enumerate(self.stack))
-        panel = Panel(
-            Text(stack_display, style="bold green"),
-            title="RPN Calculator",
-            expand=True,
-            border_style="blue",
-        )
-        self.console.print(panel)
-        self.console.print(f"> {self.current_input}", style="bold yellow", end="")
+        self.display()  # Update the display after each operation
 
     def run(self):
+        self.clear_screen()
         while True:
             self.display()
             char = getch()
@@ -112,6 +126,30 @@ class RPNCalculator:
                     self.pop()
             elif char == 'q':
                 break
+
+
+
+    def run(self):
+        self.clear_screen()  # Clear the screen once at the start
+        while True:
+            self.display()
+            char = getch()
+
+            if char in ALL_OPERATORS:
+                self.perform_operation(char)
+                self.current_input = ""
+            elif char.isdigit() or char == '.':
+                self.current_input += char
+            elif char in {'\r', '\n'}:
+                if self.current_input:
+                    self.push(self.current_input)
+                    self.current_input = ""
+            elif char == 'd':
+                if self.stack:
+                    self.pop()
+            elif char == 'q':
+                self.clear_screen()  # Clear the screen before exiting
+                sys.exit(0)  # Exit the program cleanly
 
 if __name__ == "__main__":
     calculator = RPNCalculator()

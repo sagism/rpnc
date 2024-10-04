@@ -58,7 +58,7 @@ class RPNCalculator:
             lines_printed += 1
 
         for i, value in enumerate(self.stack, 1):
-            print(f"{len(self.stack) - i + 1}: {value}                    ")
+            print(f"{len(self.stack) - i + 1}: {value:,}                    ")
             lines_printed += 1
 
         # Clear any remaining lines from previous displays

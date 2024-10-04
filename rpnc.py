@@ -1,5 +1,5 @@
 import sys
-
+import ast
 
 
 ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
@@ -70,10 +70,15 @@ class RPNCalculator:
         sys.stdout.flush()
 
     def push(self, value):
-        try:    
-            self.stack.append(float(value))
-        except ValueError:
-            input(f"Invalid input: {value}\nPress Enter to continue...")
+        input_value = value
+        try:
+            if not isinstance(value, (int, float, complex)):
+                value = ast.literal_eval(value)
+                if not isinstance(value, (int, float, complex)):
+                    raise ValueError("Should be a number...")
+            self.stack.append(value)
+        except ValueError as e:
+            input(f"Invalid input: {input_value}\n{e}\nPress Enter to continue...")
 
     def pop(self):
         return self.stack.pop() if self.stack else 0

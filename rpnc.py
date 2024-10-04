@@ -29,6 +29,7 @@ except ImportError:
 class RPNCalculator:
     def __init__(self):
         self.stack = []
+        self.intro_message = "RPN Calculator. press h or ? for help. Enter numbers, then operators (eg 2 <enter> 3 +  to add 2 and 3)"
         self.current_input = ""
 
     def clear_screen(self):
@@ -50,9 +51,11 @@ class RPNCalculator:
 
     def display(self):
         self.move_cursor(1, 1)
-        # print("RPN Calculator")
-        # print("==============")
         lines_printed = 0
+        if self.intro_message:
+            print(self.intro_message)
+            self.intro_message = ""
+            lines_printed += 1
 
         for i, value in enumerate(self.stack, 1):
             print(f"{len(self.stack) - i + 1}: {value}                    ")
@@ -186,7 +189,7 @@ class RPNCalculator:
             elif char in ('\x08', '\x7f'):  # Backspace character (ASCII and DEL)
                 if self.current_input:
                     self.current_input = self.current_input[:-1]
-            elif char == 'h':
+            elif char in ('h', '?'):
                 self.clear_screen()
                 print("RPN Calculator")
                 print("==============")
@@ -202,7 +205,7 @@ class RPNCalculator:
                 print("  s: Swap top two elements")
                 print("  d: Drop top element")
                 print("  c: Clear")
-                print("  h: Help")
+                print("  h/?: Help")
                 print("  q: Quit")
                 input("Press Enter to continue...")
             elif char == 's':

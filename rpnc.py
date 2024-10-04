@@ -77,11 +77,11 @@ class RPNCalculator:
         try:
             if not isinstance(value, (int, float, complex)):
                 value = ast.literal_eval(value)
-                if not isinstance(value, (int, float, complex)):
-                    raise ValueError("Should be a number...")
+            if not isinstance(value, (int, float, complex)):
+                raise ValueError("Should be a number...")
             self.stack.append(value)
-        except ValueError as e:
-            input(f"Invalid input: {input_value}\n{e}\nPress Enter to continue...")
+        except (ValueError, SyntaxError) as e:
+            raise ValueError(f"Invalid input: {value}. Error: {str(e)}")
 
     def pop(self):
         return self.stack.pop() if self.stack else 0

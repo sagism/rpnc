@@ -70,7 +70,10 @@ class RPNCalculator:
         sys.stdout.flush()
 
     def push(self, value):
-        self.stack.append(float(value))
+        try:    
+            self.stack.append(float(value))
+        except ValueError:
+            input(f"Invalid input: {value}\nPress Enter to continue...")
 
     def pop(self):
         return self.stack.pop() if self.stack else 0
@@ -92,7 +95,7 @@ class RPNCalculator:
 
         
 
-        if self.current_input:
+        if self.current_input and self.current_input not in ALL_OPERATORS:
             self.push(self.current_input)
             self.current_input = ""
 
@@ -145,15 +148,24 @@ class RPNCalculator:
             char = getch()
 
             
-
-            if char in ALL_OPERATORS:
+            if char == '-' and self.current_input == "":
+                # '-' is a valid operator, but we need to check if it's a negation or a subtraction operator
+                self.current_input += char
+            elif char in ALL_OPERATORS:
                 self.perform_operation(char)
                 self.current_input = ""
             elif char.isdigit() or char == '.':
                 self.current_input += char
             elif char in {'\r', '\n'}:
                 if self.current_input:
-                    self.push(self.current_input)
+                    # print(f"Processing [{self.current_input}] ...")
+                    if self.current_input in ARITHMETIC_OPERATORS:
+                        # print(f"Performing operation [{self.current_input}] ...")
+                        self.perform_operation(self.current_input)
+                    else:
+                        # print(f"Pushing [{self.current_input}] ...")
+                        self.push(self.current_input)
+                    # input("Press Enter to continue...")
                     self.current_input = ""
             elif char == 'd':
                 if self.stack:

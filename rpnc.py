@@ -166,7 +166,7 @@ class RPNCalculator:
             elif char in ALL_OPERATORS:
                 self.perform_operation(char)
                 self.current_input = ""
-            elif char.isdigit() or char == '.':
+            elif char.isdigit() or char in {'.', 'e', 'E'}:
                 self.current_input += char
             elif char in {'\r', '\n'}:
                 if self.current_input:
@@ -176,7 +176,10 @@ class RPNCalculator:
                         self.perform_operation(self.current_input)
                     else:
                         # print(f"Pushing [{self.current_input}] ...")
-                        self.push(self.current_input)
+                        try:
+                            self.push(self.current_input)
+                        except ValueError as e:
+                            input(f"\nInvalid input: {self.current_input}.\npress any key to continue...")
                     # input("Press Enter to continue...")
                     self.current_input = ""
             elif char == 'd':

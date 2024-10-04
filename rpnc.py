@@ -3,7 +3,7 @@ import sys
 
 
 ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
-UNARY_OPERATORS = {'r'}
+UNARY_OPERATORS = {'r', 'n'}
 ALL_OPERATORS = ARITHMETIC_OPERATORS | UNARY_OPERATORS
 
 # Cross-platform getch implementation
@@ -92,7 +92,11 @@ class RPNCalculator:
                     self.push(round(a))
             else:
                 self.push(round(a))
-
+        elif op == 'n':
+            if len(self.stack) < 1:
+                return
+            a = self.pop()
+            self.push(-a)
         
 
         if self.current_input and self.current_input not in ALL_OPERATORS:
@@ -189,6 +193,7 @@ class RPNCalculator:
                 print("  ^: Exponentiation")
                 print("  %: Modulus")
                 print("  r: Round (optionally, enter a number to specify precision, e.g. \"3r\" rounds to 3 decimal places)")
+                print("  n: Negate: Toggle sign of the top element of the stack)")
                 print("  s: Swap top two elements")
                 print("  d: Drop top element")
                 print("  c: Clear")

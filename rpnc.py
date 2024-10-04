@@ -1,5 +1,7 @@
 import sys
 
+
+
 ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
 UNARY_OPERATORS = {'r'}
 ALL_OPERATORS = ARITHMETIC_OPERATORS | UNARY_OPERATORS
@@ -40,6 +42,11 @@ class RPNCalculator:
     def clear_line(self):
         sys.stdout.write("\033[K")
         sys.stdout.flush()
+
+    def swap(self):
+        if len(self.stack) < 2:
+            return
+        self.stack[-1], self.stack[-2] = self.stack[-2], self.stack[-1]
 
     def display(self):
         self.move_cursor(1, 1)
@@ -82,6 +89,8 @@ class RPNCalculator:
                     self.push(round(a))
             else:
                 self.push(round(a))
+
+        
 
         if self.current_input:
             self.push(self.current_input)
@@ -135,6 +144,8 @@ class RPNCalculator:
             self.display()
             char = getch()
 
+            
+
             if char in ALL_OPERATORS:
                 self.perform_operation(char)
                 self.current_input = ""
@@ -147,6 +158,33 @@ class RPNCalculator:
             elif char == 'd':
                 if self.stack:
                     self.pop()
+            elif char == 'c':
+                self.clear_screen() # Clear the screen
+                self.stack = []
+                self.current_input = ""
+            elif char in ('\x08', '\x7f'):  # Backspace character (ASCII and DEL)
+                if self.current_input:
+                    self.current_input = self.current_input[:-1]
+            elif char == 'h':
+                self.clear_screen()
+                print("RPN Calculator")
+                print("==============")
+                print("Operators:")
+                print("  +: Add")
+                print("  -: Subtract")
+                print("  *: Multiply")
+                print("  /: Divide")
+                print("  ^: Exponentiation")
+                print("  %: Modulus")
+                print("  r: Round (optionally, enter a number to specify precision, e.g. \"3r\" rounds to 3 decimal places)")
+                print("  s: Swap top two elements")
+                print("  d: Drop top element")
+                print("  c: Clear")
+                print("  h: Help")
+                print("  q: Quit")
+                input("Press Enter to continue...")
+            elif char == 's':
+                self.swap()
             elif char == 'q':
                 self.clear_screen()  # Clear the screen before exiting
                 sys.exit(0)  # Exit the program cleanly

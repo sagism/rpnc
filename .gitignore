@@ -5,3 +5,5 @@ __pycache__
 dist
 build/
 .vscode/
+sandbox/
+.input_history

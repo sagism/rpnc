@@ -12,25 +12,7 @@ ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
 UNARY_OPERATORS = {'r', 'n'}
 ALL_OPERATORS = ARITHMETIC_OPERATORS | UNARY_OPERATORS
 
-# Cross-platform getch implementation
-# try:
-#     # Windows
-#     import msvcrt
-#     def getch():
-#         return msvcrt.getch().decode()
-# except ImportError:
-#     # Unix-like
-#     import termios
-#     import tty
-#     def getch():
-#         fd = sys.stdin.fileno()
-#         old_settings = termios.tcgetattr(fd)
-#         try:
-#             tty.setraw(sys.stdin.fileno())
-#             ch = sys.stdin.read(1)
-#         finally:
-#             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-#         return ch
+
     
 def getch():
     fd = sys.stdin.fileno()
@@ -246,7 +228,8 @@ class RPNCalculator:
             elif char == 's':
                 self.swap()
             elif char == 'q':
-                pyperclip.copy(self.stack[0])
+                if len(self.stack) > 0:
+                    pyperclip.copy(self.stack[0])
                 self.clear_screen()  # Clear the screen before exiting
                 sys.exit(0)  # Exit the program cleanly
 

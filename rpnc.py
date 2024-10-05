@@ -1,5 +1,11 @@
 import sys
 import ast
+import tty
+import termios
+import readline
+
+import pyperclip
+
 
 
 ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
@@ -7,30 +13,46 @@ UNARY_OPERATORS = {'r', 'n'}
 ALL_OPERATORS = ARITHMETIC_OPERATORS | UNARY_OPERATORS
 
 # Cross-platform getch implementation
-try:
-    # Windows
-    import msvcrt
-    def getch():
-        return msvcrt.getch().decode()
-except ImportError:
-    # Unix-like
-    import termios
-    import tty
-    def getch():
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return ch
+# try:
+#     # Windows
+#     import msvcrt
+#     def getch():
+#         return msvcrt.getch().decode()
+# except ImportError:
+#     # Unix-like
+#     import termios
+#     import tty
+#     def getch():
+#         fd = sys.stdin.fileno()
+#         old_settings = termios.tcgetattr(fd)
+#         try:
+#             tty.setraw(sys.stdin.fileno())
+#             ch = sys.stdin.read(1)
+#         finally:
+#             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+#         return ch
+    
+def getch():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        ch = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
+
+
 
 class RPNCalculator:
     def __init__(self):
         self.stack = []
         self.intro_message = "RPN Calculator. press h or ? for help. Enter numbers, then operators (eg 2 <enter> 3 +  to add 2 and 3)"
         self.current_input = ""
+         # Basic readline setup
+        readline.parse_and_bind('tab: complete')
+        readline.set_history_length(1000)
+        self.history_offset = 0
 
     def clear_screen(self):
         sys.stdout.write("\033[2J\033[H")
@@ -72,6 +94,7 @@ class RPNCalculator:
         sys.stdout.write(f"> {self.current_input}")
         sys.stdout.flush()
 
+
     def push(self, value):
         input_value = value
         try:
@@ -80,6 +103,8 @@ class RPNCalculator:
             if not isinstance(value, (int, float, complex)):
                 raise ValueError("Should be a number...")
             self.stack.append(value)
+            readline.add_history(str(input_value))
+            self.history_offset = 0
         except (ValueError, SyntaxError) as e:
             raise ValueError(f"Invalid input: {value}. Error: {str(e)}")
 
@@ -130,26 +155,21 @@ class RPNCalculator:
         
         self.display()  # Update the display after each operation
 
-    def run(self):
-        self.clear_screen()
-        while True:
-            self.display()
-            char = getch()
 
-            if char in ALL_OPERATORS:
-                self.perform_operation(char)
-                self.current_input = ""
-            elif char.isdigit() or char == '.':
-                self.current_input += char
-            elif char in {'\r', '\n'}:
-                if self.current_input:
-                    self.push(self.current_input)
-                    self.current_input = ""
-            elif char == 'd':
-                if self.stack:
-                    self.pop()
-            elif char == 'q':
-                break
+    def handle_up_arrow(self):
+        # all_history = ','.join([ readline.get_history_item(i)  for i in range(1, readline.get_current_history_length() + 1)])
+        # print("up, history: ", all_history)
+        # input("Press Enter to continue...")
+        n_history = readline.get_current_history_length()
+        if n_history > 0:
+            self.current_input = readline.get_history_item(n_history-self.history_offset) # n_history - self.history_index)
+            self.history_offset = min(self.history_offset+1, n_history-1)
+
+    def handle_down_arrow(self):
+        n_history = readline.get_current_history_length()
+        if readline.get_current_history_length() > 0:
+            self.current_input = readline.get_history_item(n_history-self.history_offset)
+            self.history_offset = max(self.history_offset-1, 0)
 
 
 
@@ -160,7 +180,19 @@ class RPNCalculator:
             char = getch()
 
             
-            if char == '-' and self.current_input == "":
+            if char == '\x1b':  # ESC character
+                next1, next2 = getch(), getch()
+                if next1 == '[':
+                    if next2 == 'A':  # Up arrow
+                        # print("up")
+                        # input("Press Enter to continue...")
+                        self.handle_up_arrow()
+                    elif next2 == 'B':  # Down arrow
+                        self.handle_down_arrow()
+                        # print("down")
+                        # input("Press Enter to continue...")
+
+            elif char == '-' and self.current_input == "":
                 # '-' is a valid operator, but we need to check if it's a negation or a subtraction operator
                 self.current_input += char
             elif char in ALL_OPERATORS:
@@ -214,6 +246,7 @@ class RPNCalculator:
             elif char == 's':
                 self.swap()
             elif char == 'q':
+                pyperclip.copy(self.stack[0])
                 self.clear_screen()  # Clear the screen before exiting
                 sys.exit(0)  # Exit the program cleanly
 

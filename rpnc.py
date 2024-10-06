@@ -31,8 +31,6 @@ class RPNCalculator:
         self.stack = []
         self.intro_message = "RPN Calculator. press h or ? for help. Enter numbers, then operators (eg 2 <enter> 3 +  to add 2 and 3)"
         self.current_input = ""
-         # Basic readline setup
-        readline.parse_and_bind('tab: complete')
         readline.set_history_length(1000)
         self.history_offset = 0
 
@@ -65,7 +63,6 @@ class RPNCalculator:
             print(f"{len(self.stack) - i + 1}: {value:,}                    ")
             lines_printed += 1
 
-        # Clear any remaining lines from previous displays
         for _ in range(lines_printed, 20):  # Assume max 20 lines for safety
             self.clear_line()
             self.move_cursor(1, _ + 1)
@@ -139,9 +136,6 @@ class RPNCalculator:
 
 
     def handle_up_arrow(self):
-        # all_history = ','.join([ readline.get_history_item(i)  for i in range(1, readline.get_current_history_length() + 1)])
-        # print("up, history: ", all_history)
-        # input("Press Enter to continue...")
         n_history = readline.get_current_history_length()
         if n_history > 0:
             self.current_input = readline.get_history_item(n_history-self.history_offset) # n_history - self.history_index)
@@ -154,25 +148,19 @@ class RPNCalculator:
             self.history_offset = max(self.history_offset-1, 0)
 
 
-
     def run(self):
-        self.clear_screen()  # Clear the screen once at the start
+        self.clear_screen()
         while True:
             self.display()
             char = getch()
-
             
             if char == '\x1b':  # ESC character
                 next1, next2 = getch(), getch()
                 if next1 == '[':
                     if next2 == 'A':  # Up arrow
-                        # print("up")
-                        # input("Press Enter to continue...")
                         self.handle_up_arrow()
                     elif next2 == 'B':  # Down arrow
                         self.handle_down_arrow()
-                        # print("down")
-                        # input("Press Enter to continue...")
 
             elif char == '-' and self.current_input == "":
                 # '-' is a valid operator, but we need to check if it's a negation or a subtraction operator
@@ -184,23 +172,19 @@ class RPNCalculator:
                 self.current_input += char
             elif char in {'\r', '\n'}:
                 if self.current_input:
-                    # print(f"Processing [{self.current_input}] ...")
                     if self.current_input in ARITHMETIC_OPERATORS:
-                        # print(f"Performing operation [{self.current_input}] ...")
                         self.perform_operation(self.current_input)
                     else:
-                        # print(f"Pushing [{self.current_input}] ...")
                         try:
                             self.push(self.current_input)
                         except ValueError as e:
                             input(f"\nInvalid input: {self.current_input}.\npress any key to continue...")
-                    # input("Press Enter to continue...")
                     self.current_input = ""
             elif char == 'd':
                 if self.stack:
                     self.pop()
             elif char == 'c':
-                self.clear_screen() # Clear the screen
+                self.clear_screen()
                 self.stack = []
                 self.current_input = ""
             elif char in ('\x08', '\x7f'):  # Backspace character (ASCII and DEL)
@@ -230,8 +214,9 @@ class RPNCalculator:
             elif char == 'q':
                 if len(self.stack) > 0:
                     pyperclip.copy(self.stack[0])
-                self.clear_screen()  # Clear the screen before exiting
-                sys.exit(0)  # Exit the program cleanly
+                self.clear_screen()  
+                sys.exit(0)
+
 
 if __name__ == "__main__":
     calculator = RPNCalculator()

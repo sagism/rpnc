@@ -1,12 +1,13 @@
-rpnc
+![rpnc logo](assets/rpnc_logo.png)
 
-A simple reverse polish notation calculator.
+# rpnc
+
+A command-line reverse polish notation calculator.
 
 ## Features
 
 - Dynamic stack length
 - History navigation (arrow keys)
-- Basic command mode for navigating history, etc.
 - Copies last result to clipboard at exit
 
 ## Installation
@@ -18,10 +19,9 @@ A simple reverse polish notation calculator.
     pip install -r requirements.txt
     python rpnc.py
 
-You can install it globally on your system using pyinstaller:
+You can install it globally on your system using pyinstaller.
 
-    pyinstaller rpnc.py --onefile
-    sudo cp dist/rpnc /usr/local/bin/
+See `build.sh` for more details.
 
 ## Usage
 
@@ -34,7 +34,7 @@ You can install it globally on your system using pyinstaller:
     h/? - show this message
     q - quit
 
-Note that all operators are applied immediately, except for '-', which requires pressing enter as there is some ambiguity otherwise with the '-' sign for negative numbers.
+Note that all operators are applied immediately, except for a leading '-', which requires pressing enter as there is some ambiguity otherwise with the '-' sign for negative numbers.
 
 ## License
 

@@ -25,16 +25,20 @@ See `build.sh` for more details.
 
 ## Usage
 
-    Supported operators: +, -, *, /, %, ^
+    Supported operators: +, -, *, /, as well as...
+    % - Percentage
+    ^ - Exponent
+    \ - Modulus (Remainder)
     s - swap the last two items on the stack
     d - drop the last item from the stack
     c - clear the stack
     r - round the top of the stack (can also specifiy precision, e.g. 2r rounds to two decimal places)
     n - negate the top of the stack (toggle sign)
+    <Enter> - Duplicate last line (when input line is empty)
     h/? - show this message
     q - quit
 
-Note that all operators are applied immediately, except for a leading '-', which requires pressing enter as there is some ambiguity otherwise with the '-' sign for negative numbers.
+Note that all operators are applied immediately (no need to press enter), except for a leading '-', which requires pressing enter as there is some ambiguity otherwise with the '-' sign for negative numbers.
 
 ## License
 

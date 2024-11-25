@@ -6,9 +6,12 @@ import readline
 
 import pyperclip
 
+# TODO: 
+#   - % should calculate percents
 
 
-ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%'}
+
+ARITHMETIC_OPERATORS = {'+', '-', '*', '/', '^', '%', '\\'}
 UNARY_OPERATORS = {'r', 'n'}
 ALL_OPERATORS = ARITHMETIC_OPERATORS | UNARY_OPERATORS
 
@@ -90,6 +93,10 @@ class RPNCalculator:
     def pop(self):
         return self.stack.pop() if self.stack else 0
 
+    def dup(self):
+        self.stack.append(self.stack[-1])
+        self.display()
+
     def perform_operation(self, op):
         if op == 'r':
             if len(self.stack) < 1:
@@ -130,6 +137,9 @@ class RPNCalculator:
             elif op == '^':
                 self.push(a ** b)
             elif op == '%':
+                # self.push(a % b)
+                self.push(a*b/100.0)
+            elif op == '\\':
                 self.push(a % b)
         
         self.display()  # Update the display after each operation
@@ -180,6 +190,8 @@ class RPNCalculator:
                         except ValueError as e:
                             input(f"\nInvalid input: {self.current_input}.\npress any key to continue...")
                     self.current_input = ""
+                elif self.stack:
+                    self.dup()
             elif char == 'd':
                 if self.stack:
                     self.pop()
@@ -199,13 +211,15 @@ class RPNCalculator:
                 print("  -: Subtract")
                 print("  *: Multiply")
                 print("  /: Divide")
+                print("  \: (Modulus) Remainder")
                 print("  ^: Exponentiation")
-                print("  %: Modulus")
+                print("  %: Percent")
                 print("  r: Round (optionally, enter a number to specify precision, e.g. \"3r\" rounds to 3 decimal places)")
                 print("  n: Negate: Toggle sign of the top element of the stack)")
-                print("  s: Swap top two elements")
-                print("  d: Drop top element")
+                print("  s: Swap last two elements")
+                print("  d: Drop last element")
                 print("  c: Clear")
+                print("  <Enter>: Duplicate last line")
                 print("  h/?: Help")
                 print("  q: Quit")
                 input("Press Enter to continue...")
